@@ -1,0 +1,7 @@
+{
+  "name": "display-snap",
+  "short_name": "display-snap",
+  "description": "Display snap for events",
+  "start_url": "/",
+  "display": "standalone"
+}
