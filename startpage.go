@@ -27,7 +27,7 @@ func startPageHandler(w http.ResponseWriter, r *http.Request) {
 		data.Addrs = append(data.Addrs, addr)
 	}
 
-	t, err := template.ParseFiles(path.Join(Rootdir, "www", "start.html"))
+	t, err := template.ParseFiles(path.Join(Rootdir, "www", "start.html.tpl"))
 	if err != nil {
 		fmt.Fprintf(w, "Couldn't find starting page: %v", err)
 		return
