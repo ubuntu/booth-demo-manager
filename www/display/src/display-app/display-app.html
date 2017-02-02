@@ -5,9 +5,15 @@
     <style>
       :host {
         display: block;
+        min-height: 100vh
+      }
+      iframe {
+        width: 100%;
+        min-height: 100vh;
+        border: 0;
       }
     </style>
-    <h2>Hello [[prop1]]</h2>
+    <iframe src="[[currentURL]]"></iframe>
   </template>
 
   <script>
@@ -16,9 +22,9 @@
       is: 'display-app',
 
       properties: {
-        prop1: {
+        currentURL: {
           type: String,
-          value: 'display-app',
+          value: 'start',
         },
       },
 
