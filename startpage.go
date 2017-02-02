@@ -19,7 +19,7 @@ func startPageHandler(w http.ResponseWriter, r *http.Request) {
 	// get IPs to file up data
 	ips, err := getLocalIPs()
 	if err != nil {
-		fmt.Fprintf(w, "Couldn't find any local IP on this device: %v", err)
+		http.Error(w, fmt.Sprintf("Couldn't find any local IP on this device: %v", err), http.StatusInternalServerError)
 		return
 	}
 	for _, ip := range ips {
@@ -29,7 +29,7 @@ func startPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, err := template.ParseFiles(path.Join(Rootdir, "www", "start.html.tpl"))
 	if err != nil {
-		fmt.Fprintf(w, "Couldn't find starting page: %v", err)
+		http.Error(w, fmt.Sprintf("Couldn't find starting page: %v", err), http.StatusInternalServerError)
 		return
 	}
 	t.Execute(w, data)
