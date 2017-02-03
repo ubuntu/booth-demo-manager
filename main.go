@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -59,12 +60,19 @@ func main() {
 	displayComm := messages.NewServer("/api/display")
 	go displayComm.Listen()
 
+	// Website real assets
+	wwwPath := path.Join(Rootdir, "www")
 	wwwHandler := http.FileServer(http.Dir(path.Join(Rootdir, "www")))
-	// website assets
-	http.Handle("/display/", wwwHandler)
-	http.Handle("/pilot/", wwwHandler)
-	http.Handle("/css/", wwwHandler)
-	http.Handle("/3rdparty-scripts/", wwwHandler)
+	dirs, err := ioutil.ReadDir(wwwPath)
+	if err != nil {
+		log.Fatal("Couldn't list content of ", wwwPath)
+	}
+	for _, dir := range dirs {
+		if !dir.IsDir() {
+			continue
+		}
+		http.Handle("/"+dir.Name()+"/", wwwHandler)
+	}
 	// generated links: will serve IP to connect to
 	http.HandleFunc("/", startPageHandler)
 	if err = http.ListenAndServe(":"+*port, nil); err != nil {
