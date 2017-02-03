@@ -93,6 +93,6 @@ func (c *Client) listenRead() {
 			}
 			c.server.err <- err
 		}
-		c.server.broadcast <- &action
+		c.server.Messages <- &action
 	}
 }
