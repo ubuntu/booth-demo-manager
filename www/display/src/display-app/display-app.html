@@ -49,9 +49,10 @@
       _onmessage: function(e) {
         console.log('Message received: ' + e.data);
         var message = JSON.parse(e.data);
-        switch(message.command) {
-          case 'navigate':
-            this.currentURL = message.currentURL;
+        console.log(message)
+        switch(message.Command) {
+          case 'current':
+            this.currentURL = message.Content.URL;
             break;
         }
       },
