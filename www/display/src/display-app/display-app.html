@@ -15,7 +15,7 @@
         border: 0;
       }
     </style>
-    <iframe src="[[currentURL]]"></iframe>
+    <iframe src$="[[currentURL]]"></iframe>
   </template>
 
   <script>
@@ -36,14 +36,21 @@
 
 
       ready: function() {
-        // connect websocket and different handlers
-        var websocket = new ReconnectingWebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/api/display');
-        websocket.onopen = this._connected.bind(this);
-        websocket.onclose = this._disconnected.bind(this);
-        websocket.onerror = this._connectionerror.bind(this);
-        websocket.onmessage = this._onmessage.bind(this);
+        // even this.async is too fast sometimes. We want to connect to the websocket and potentially
+        // already receive a page change order. If that happens too quickly, we don't have the
+        // iframe reloading its new src.
+        // Also, that enables us to show up current IP for 5s
 
-        this.websocket = websocket; // for sending requests
+        setTimeout(function() {
+          // connect websocket and different handlers
+          var websocket = new ReconnectingWebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/api/display');
+          websocket.onopen = this._connected.bind(this);
+          websocket.onclose = this._disconnected.bind(this);
+          websocket.onerror = this._connectionerror.bind(this);
+          websocket.onmessage = this._onmessage.bind(this);
+
+          this.websocket = websocket; // for sending requests
+          }.bind(this), 5000);
       },
 
       _onmessage: function(e) {
