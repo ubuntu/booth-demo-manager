@@ -24,8 +24,11 @@ type Server struct {
 	res           string
 }
 
+// SendNewClient handler for init message on connected new client
+type SendNewClient func(c *Client)
+
 // NewServer create a new ws server
-func NewServer(url string) *Server {
+func NewServer(url string, newClientFunc SendNewClient) *Server {
 
 	s := &Server{
 		Messages:      make(chan *Action),
@@ -35,6 +38,7 @@ func NewServer(url string) *Server {
 		broadcast:     make(chan *Action),
 		err:           make(chan error),
 		quit:          make(chan struct{}),
+		newClientFunc: newClientFunc,
 		res:           url,
 	}
 	http.Handle(url, websocket.Handler(s.onNewClient))
@@ -85,8 +89,8 @@ func (s *Server) Listen() {
 			log.Println("New client connected on", s.res)
 			s.clients[c] = struct{}{}
 			log.Println(len(s.clients), "clients connected on", s.res)
-			// TODO: send current page msg
-			//c.Send()
+			// Send init message(s)
+			s.newClientFunc(c)
 
 		// client disconnected
 		case c := <-s.unregister:
