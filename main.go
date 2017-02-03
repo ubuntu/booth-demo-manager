@@ -11,8 +11,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-
-	"github.com/ubuntu/display-snap/messages"
 )
 
 var (
@@ -45,10 +43,13 @@ func main() {
 
 	flag.Parse()
 
-	// Websocket servers
-	displayComm := messages.NewServer("/api/display")
-	defer displayComm.Quit()
-	go displayComm.Listen()
+	// Initialize websocket communication servers
+	initWS()
+
+	// start pilot system
+	if err := startPilot(); err != nil {
+		log.Fatalf("Couldn't load demo settings: %v", err)
+	}
 
 	// Website real assets
 	wwwPath := path.Join(Rootdir, "www")
