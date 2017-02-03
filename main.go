@@ -11,6 +11,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/ubuntu/display-snap/pilot"
 )
 
 var (
@@ -64,6 +66,8 @@ func main() {
 		}
 		http.Handle("/"+dir.Name()+"/", wwwHandler)
 	}
+	// Virtual image directory
+	http.Handle("/pilot/generatedimg/", http.StripPrefix("/pilot/generatedimg/", http.FileServer(pilot.VirtImages{})))
 	// Generated links: will serve IP to connect to
 	http.HandleFunc("/", startPageHandler)
 
