@@ -10,6 +10,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/ubuntu/display-snap/messages"
 )
 
 var (
@@ -52,6 +54,10 @@ func main() {
 		addr := fmt.Sprintf("http://%s:%s/pilot", ip, *port)
 		log.Printf("You access pilot interface via %s\n", addr)
 	}
+
+	// Websocket servers
+	displayComm := messages.NewServer("/api/display")
+	go displayComm.Listen()
 
 	wwwHandler := http.FileServer(http.Dir(path.Join(Rootdir, "www")))
 	// website assets
