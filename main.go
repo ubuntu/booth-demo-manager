@@ -45,19 +45,9 @@ func main() {
 
 	flag.Parse()
 
-	ips, err := getLocalIPs()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Printf("Serving display on http://localhost:%s/display", *port)
-	for _, ip := range ips {
-		addr := fmt.Sprintf("http://%s:%s/pilot", ip, *port)
-		log.Printf("You access pilot interface via %s\n", addr)
-	}
-
 	// Websocket servers
 	displayComm := messages.NewServer("/api/display")
+	defer displayComm.Quit()
 	go displayComm.Listen()
 
 	// Website real assets
@@ -73,8 +63,21 @@ func main() {
 		}
 		http.Handle("/"+dir.Name()+"/", wwwHandler)
 	}
-	// generated links: will serve IP to connect to
+	// Generated links: will serve IP to connect to
 	http.HandleFunc("/", startPageHandler)
+
+	// Print ips
+	ips, err := getLocalIPs()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Serving display on http://localhost:%s/display", *port)
+	for _, ip := range ips {
+		addr := fmt.Sprintf("http://%s:%s/pilot", ip, *port)
+		log.Printf("You access pilot interface via %s\n", addr)
+	}
+
+	// Start server
 	if err = http.ListenAndServe(":"+*port, nil); err != nil {
 		log.Fatal("Couldn't start webserver:", err)
 	}
