@@ -106,6 +106,9 @@ func (s *Server) Listen() {
 			for c := range s.clients {
 				c.Quit()
 			}
+			// TODO: proper shutdown: wait for all client to be unregistered before shutting down goroutine
+			// (and add goroutine lock)
+			// We'll only do it once we upgrade to 1.8 to have easy shutdownable main webserver
 			return
 		}
 	}
