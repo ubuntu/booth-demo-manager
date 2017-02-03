@@ -58,6 +58,7 @@ func main() {
 	http.Handle("/display/", wwwHandler)
 	http.Handle("/pilot/", wwwHandler)
 	http.Handle("/css/", wwwHandler)
+	http.Handle("/3rdparty-scripts/", wwwHandler)
 	// generated links: will serve IP to connect to
 	http.HandleFunc("/", startPageHandler)
 	if err = http.ListenAndServe(":"+*port, nil); err != nil {

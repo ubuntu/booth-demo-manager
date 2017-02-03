@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<script src="/3rdparty-scripts/reconnecting-websocket.js"></script>
+
 <dom-module id="display-app">
   <template>
     <style>
@@ -22,10 +24,50 @@
       is: 'display-app',
 
       properties: {
+        connected: {
+          type: Boolean,
+          value: false,
+        },
         currentURL: {
           type: String,
           value: '/',
         },
+      },
+
+
+      ready: function() {
+        // connect websocket and different handlers
+        var websocket = new ReconnectingWebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/api/display');
+        websocket.onopen = this._connected.bind(this);
+        websocket.onclose = this._disconnected.bind(this);
+        websocket.onerror = this._connectionerror.bind(this);
+        websocket.onmessage = this._onmessage.bind(this);
+
+        this.websocket = websocket; // for sending requests
+      },
+
+      _onmessage: function(e) {
+        console.log('Message received: ' + e.data);
+        var message = JSON.parse(e.data);
+        switch(message.command) {
+          case 'navigate':
+            this.currentURL = message.currentURL;
+            break;
+        }
+      },
+
+      _connected: function() {
+        console.log('websocket connected');
+        this.connected = true;
+      },
+
+      _disconnected: function() {
+        console.log('websocket disconnected');
+        this.connected = false;
+      },
+
+      _connectionerror: function(e) {
+          console.log('Error in websocket: ' + e.data);
       },
 
     });
