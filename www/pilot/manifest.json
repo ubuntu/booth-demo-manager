@@ -1,0 +1,7 @@
+{
+  "name": "pilot",
+  "short_name": "pilot",
+  "description": "Pilot control for display snap",
+  "start_url": "/",
+  "display": "standalone"
+}

@@ -1,0 +1,73 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<script src="/3rdparty-scripts/reconnecting-websocket.js"></script>
+
+<dom-module id="pilot-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]</h2>
+    <paper-toast text="Not connected to [[_hostname()]] display server" class="fit-bottom" opened$="[[_isWSConnected(websocket.readyState)]]" duration="0"></paper-toast>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'pilot-app',
+
+      properties: {
+        websocket: Object,
+      },
+
+
+      ready: function() {
+        // connect websocket and different handlers
+        //var websocket = new ReconnectingWebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/api/pilot');
+        // TODO: local connection to not relaunch go webserver
+        var websocket = new ReconnectingWebSocket('ws://' + window.location.hostname + ':8100/api/pilot');
+        websocket.onopen = this._connected.bind(this);
+        websocket.onclose = this._disconnected.bind(this);
+        websocket.onerror = this._connectionerror.bind(this);
+        websocket.onmessage = this._onmessage.bind(this);
+
+        this.websocket = websocket; // for sending requests
+      },
+
+      _isWSConnected(readyState) {
+        console.log(readyState);
+        return readyState !== WebSocket.OPEN;
+      },
+
+      _hostname: function() { return window.location.hostname; },
+
+      _onmessage: function(e) {
+        console.log('Message received: ' + e.data);
+        var message = JSON.parse(e.data);
+        console.log(message)
+        switch(message.Command) {
+          case 'current':
+            break;
+        }
+      },
+
+      _connected: function() {
+        console.log('websocket connected');
+        this.notifyPath('websocket.readyState');
+      },
+
+      _disconnected: function() {
+        console.log('websocket disconnected');
+        this.notifyPath('websocket.readyState');
+      },
+
+      _connectionerror: function(e) {
+          console.log('Error in websocket: ' + e.data);
+          this.notifyPath('websocket.readyState');
+      },
+
+    });
+  </script>
+</dom-module>
