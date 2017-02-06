@@ -65,8 +65,7 @@ func startPilot() error {
 	go func() {
 		for {
 			select {
-			// TODO: will be pilotComm after testing
-			case a := <-displayComm.Messages:
+			case a := <-pilotComm.Messages:
 				switch a.Command {
 				case "changeCurrent":
 					// TODO: automated conversion/duck typing?
