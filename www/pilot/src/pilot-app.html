@@ -12,10 +12,11 @@
     <style>
       :host {
         display: block;
+        --ubuntu-orange: #E95420;
       }
     </style>
     <iron-pages selected="[[routeData.view]]" attr-for-selected="name">
-      <list-demos name="" demos=[[allDemos]]></list-demos>
+      <list-demos name="" demos=[[allDemos]] on-navigate="_sendNav"></list-demos>
       <demo-details name="demos" id=[[_idfor(subroute.path)]] demo=[[_demofor(subroute.path,allDemos)]]></demo-details>
     </iron-pages>
     <app-location route="{{route}}"></app-location>
@@ -48,6 +49,11 @@
         websocket.onmessage = this._onmessage.bind(this);
 
         this.websocket = websocket; // for sending requests
+      },
+
+      _sendNav: function (e) {
+        console.log(JSON.stringify(e.detail))
+        this.websocket.send(JSON.stringify(e.detail))
       },
 
       _demofor: function (path, all) {
