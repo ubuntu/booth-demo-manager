@@ -51,18 +51,15 @@
       },
 
       _demofor: function (path, all) {
-        console.log("demo for")
-        console.log(path)
-        console.log(all)
+        var id = path.substring(1);
+        return all[id];
       },
 
       _idfor: function (path) {
-        console.log("ID FOR")
-        return "foo"
+        return path.substring(1);
       },
 
       _isWSConnected(readyState) {
-        console.log(readyState);
         return readyState !== WebSocket.OPEN;
       },
 
