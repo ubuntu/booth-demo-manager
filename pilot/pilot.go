@@ -143,8 +143,6 @@ func loadDefinition() error {
 		}
 	}
 
-	// TODO: send all demos
-
 	return nil
 }
 
