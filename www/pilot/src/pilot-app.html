@@ -1,6 +1,11 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
 <script src="/3rdparty-scripts/reconnecting-websocket.js"></script>
+<link rel="import" href="pages/list-demos.html">
+<link rel="import" href="pages/demo-details.html">
 
 <dom-module id="pilot-app">
   <template>
@@ -9,7 +14,16 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]</h2>
+    <iron-pages selected="[[routeData.view]]" attr-for-selected="name">
+      <list-demos name="" demos=[[allDemos]]></list-demos>
+      <demo-details name="demos" id=[[_idfor(subroute.path)]] demo=[[_demofor(subroute.path,allDemos)]]></demo-details>
+    </iron-pages>
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/pilot/:view"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
     <paper-toast text="Not connected to [[_hostname()]] display server" class="fit-bottom" opened$="[[_isWSConnected(websocket.readyState)]]" duration="0"></paper-toast>
   </template>
 
@@ -20,8 +34,8 @@
 
       properties: {
         websocket: Object,
+        allDemos: Object,
       },
-
 
       ready: function() {
         // connect websocket and different handlers
@@ -34,6 +48,17 @@
         websocket.onmessage = this._onmessage.bind(this);
 
         this.websocket = websocket; // for sending requests
+      },
+
+      _demofor: function (path, all) {
+        console.log("demo for")
+        console.log(path)
+        console.log(all)
+      },
+
+      _idfor: function (path) {
+        console.log("ID FOR")
+        return "foo"
       },
 
       _isWSConnected(readyState) {
@@ -49,6 +74,9 @@
         console.log(message)
         switch(message.Command) {
           case 'current':
+            break;
+          case 'allDemos':
+            this.allDemos = message.Content;
             break;
         }
       },

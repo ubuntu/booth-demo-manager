@@ -1,0 +1,24 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="list-demos">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h1>All available demos</h1>
+    <a href="/pilot/demos/demo1">Click me</a>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'list-demos',
+
+      properties: {
+        demos: Object,
+      },
+    })
+  </script>
+</dom-module>

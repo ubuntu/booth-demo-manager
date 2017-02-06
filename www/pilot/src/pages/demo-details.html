@@ -1,0 +1,26 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="demo-details">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h1>Details for [[id]]</h1>
+    <a href="/pilot/">Back</a>
+  </template>
+
+
+  <script>
+    Polymer({
+
+      is: 'demo-details',
+
+      properties: {
+        id: String,
+        demo: Object,
+      },
+    })
+  </script>
+</dom-module>
