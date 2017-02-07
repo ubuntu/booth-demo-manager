@@ -2,7 +2,6 @@ package messages
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"log"
 
@@ -38,13 +37,7 @@ func NewClient(conn *websocket.Conn, server *Server) (*Client, error) {
 
 // Send a message to this client
 func (c *Client) Send(msg *Action) {
-	select {
-	case c.send <- msg:
-	default:
-		err := fmt.Errorf("client disconnected abruptely")
-		c.server.err <- err
-		c.Quit()
-	}
+	c.send <- msg
 }
 
 // Quit close down client connection
