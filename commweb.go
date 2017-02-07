@@ -91,8 +91,12 @@ func startPilot() error {
 				displayComm.Send(msg)
 				pilotComm.Send(msg)
 			case all := <-allDemosChanged:
-				allDemos = all
-				msg := buildAllDemosChangedMessage(all)
+				// build demo map
+				allDemos = make(map[string]pilot.Demo)
+				for key, d := range all {
+					allDemos[key] = *d
+				}
+				msg := buildAllDemosChangedMessage(allDemos)
 				pilotComm.Send(msg)
 			}
 		}
