@@ -1,11 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <dom-module id="list-demos">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment">
       :host {
         display: block;
       }
@@ -40,22 +40,24 @@
       }
     </style>
     <h1>All available demos on [[_host]]</h1>
-    <template is="dom-repeat" items="[[_toArray(demos)]]">
-      <paper-card heading="[[item.id]]" image="/pilot/generatedimg/[[item.value.Image]]" alt="[[item.id]]">
-      <div class="card-content">
-        <div>[[item.value.Description]]</div>
-        <p class="nav-info">Navigate to <a href=[[_translateURL(item.value.URL)]]>[[_translateURL(item.value.URL)]]</a></p>
-      </div>
-      <div class$="card-actions [[_selected(current, item.id)]]">
-        <paper-button class="nav" on-tap="_navigateTo">Go</paper-button>
-        <template is="dom-if" if="[[item.value.Slides]]">
-          <a href="/pilot/demos/[[item.id]]" tabindex="-1">
-            <paper-button >Select slide…</paper-button>
-          </a>
-        </template>
-      </div>
-    </paper-card>
-    </template>
+    <div class="layout horizontal center-justified wrap">
+      <template is="dom-repeat" items="[[_toArray(demos)]]">
+        <paper-card heading="[[item.id]]" image="/pilot/generatedimg/[[item.value.Image]]" alt="[[item.id]]">
+        <div class="card-content">
+          <div>[[item.value.Description]]</div>
+          <p class="nav-info">Navigate to <a href=[[_translateURL(item.value.URL)]]>[[_translateURL(item.value.URL)]]</a></p>
+        </div>
+        <div class$="card-actions [[_selected(current, item.id)]]">
+          <paper-button class="nav" on-tap="_navigateTo">Go</paper-button>
+          <template is="dom-if" if="[[item.value.Slides]]">
+            <a href="/pilot/demos/[[item.id]]" tabindex="-1">
+              <paper-button >Select slide…</paper-button>
+            </a>
+          </template>
+        </div>
+      </paper-card>
+      </template>
+    </div>
   </template>
 
   <script>
