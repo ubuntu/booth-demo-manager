@@ -9,9 +9,21 @@
       :host {
         display: block;
       }
+      h1 {
+        text-align: center;
+      }
       paper-card {
-        max-width: 350px;
+        width: 350px;
         margin: 10px;
+        --paper-card-header-image: {
+          max-height: 235px;
+        };
+        --paper-card-header-image-text: {
+          color: var(--canonical-aubergine);
+          background: rgba(255,255,255, .5);
+          border-top-right-radius: 0.4em;
+          font-size: 0.6em;
+        };
       }
       paper-button.nav {
         background-color: var(--ubuntu-orange);
@@ -27,12 +39,12 @@
         background-color: var(--canonical-aubergine);
       }
     </style>
-    <h1>All available demos</h1>
+    <h1>All available demos on [[_host]]</h1>
     <template is="dom-repeat" items="[[_toArray(demos)]]">
       <paper-card heading="[[item.id]]" image="/pilot/generatedimg/[[item.value.Image]]" alt="[[item.id]]">
       <div class="card-content">
         <div>[[item.value.Description]]</div>
-        <p class="nav-info">Navigate to [[item.value.URL]]</p>
+        <p class="nav-info">Navigate to <a href=[[_translateURL(item.value.URL)]]>[[_translateURL(item.value.URL)]]</a></p>
       </div>
       <div class$="card-actions [[_selected(current, item.id)]]">
         <paper-button class="nav" on-tap="_navigateTo">Go</paper-button>
@@ -54,6 +66,10 @@
       properties: {
         demos: Object,
         current: String,
+        _host: {
+          type: String,
+          value: window.location.hostname,
+        },
       },
 
       _navigateTo: function(e) {
@@ -70,6 +86,10 @@
           return ""
         }
         return "current"
+      },
+
+      _translateURL: function(url) {
+        return url.replace("localhost", this._host);
       },
 
       _toArray: function(obj) {
