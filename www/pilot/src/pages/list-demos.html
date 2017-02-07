@@ -23,6 +23,9 @@
         margin-top: 1em;
         margin-bottom: 0;
       }
+      .current {
+        background-color: var(--canonical-aubergine);
+      }
     </style>
     <h1>All available demos</h1>
     <template is="dom-repeat" items="[[_toArray(demos)]]">
@@ -31,7 +34,7 @@
         <div>[[item.value.Description]]</div>
         <p class="nav-info">Navigate to [[item.value.URL]]</p>
       </div>
-      <div class="card-actions">
+      <div class$="card-actions [[_selected(current, item.id)]]">
         <paper-button class="nav" on-tap="_navigateTo">Go</paper-button>
         <template is="dom-if" if="[[item.value.Slides]]">
           <a href="/pilot/demos/[[item.id]]" tabindex="-1">
@@ -50,6 +53,7 @@
 
       properties: {
         demos: Object,
+        current: String,
       },
 
       _navigateTo: function(e) {
@@ -59,6 +63,13 @@
             'ID': e.model.get('item.id'),
           },
         });
+      },
+
+      _selected: function (current, itemid) {
+        if (current !== itemid) {
+          return ""
+        }
+        return "current"
       },
 
       _toArray: function(obj) {

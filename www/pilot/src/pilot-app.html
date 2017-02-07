@@ -13,10 +13,12 @@
       :host {
         display: block;
         --ubuntu-orange: #E95420;
+        --canonical-aubergine: #2C001E;
       }
     </style>
     <iron-pages selected="[[routeData.view]]" attr-for-selected="name">
-      <list-demos name="" demos=[[allDemos]] on-navigate="_sendNav"></list-demos>
+      <list-demos name="" demos=[[allDemos]] current=[[current.ID]]
+                          on-navigate="_sendNav"></list-demos>
       <demo-details name="demos" id=[[_idfor(subroute.path)]] demo=[[_demofor(subroute.path,allDemos)]]></demo-details>
     </iron-pages>
     <app-location route="{{route}}"></app-location>
@@ -36,6 +38,7 @@
       properties: {
         websocket: Object,
         allDemos: Object,
+        current: Object,
       },
 
       ready: function() {
@@ -77,6 +80,7 @@
         console.log(message)
         switch(message.Command) {
           case 'current':
+            this.current = message.Content;
             break;
           case 'allDemos':
             this.allDemos = message.Content;
