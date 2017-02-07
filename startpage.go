@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"net/http"
 	"path"
+
+	"github.com/ubuntu/display-snap/config"
 )
 
 type startPageData struct {
@@ -27,7 +29,7 @@ func startPageHandler(w http.ResponseWriter, r *http.Request) {
 		data.Addrs = append(data.Addrs, addr)
 	}
 
-	t, err := template.ParseFiles(path.Join(Rootdir, "www", "start.html.tpl"))
+	t, err := template.ParseFiles(path.Join(config.Rootdir, "www", "start.html.tpl"))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Couldn't find starting page: %v", err), http.StatusInternalServerError)
 		return

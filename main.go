@@ -7,37 +7,15 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
+	"github.com/ubuntu/display-snap/config"
 )
 
 var (
-	// Rootdir executable code to reach assets
-	Rootdir string
-	// Datadir access to write storage path
-	Datadir string
-
 	port *string
 )
-
-func init() {
-	// Set main set of directories
-	var err error
-	Rootdir = os.Getenv("SNAP")
-	if Rootdir == "" {
-		if Rootdir, err = filepath.Abs("."); err != nil {
-			log.Fatal(err)
-		}
-	}
-	Datadir = os.Getenv("SNAP_DATA")
-	if Datadir == "" {
-		Datadir = Rootdir
-	}
-
-}
 
 func main() {
 	port = flag.String("p", "8100", "port to serve display interface")
@@ -53,8 +31,8 @@ func main() {
 	}
 
 	// Website real assets
-	wwwPath := path.Join(Rootdir, "www")
-	wwwHandler := http.FileServer(http.Dir(path.Join(Rootdir, "www")))
+	wwwPath := path.Join(config.Rootdir, "www")
+	wwwHandler := http.FileServer(http.Dir(path.Join(config.Rootdir, "www")))
 	dirs, err := ioutil.ReadDir(wwwPath)
 	if err != nil {
 		log.Fatal("Couldn't list content of ", wwwPath)

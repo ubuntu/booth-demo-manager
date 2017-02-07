@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 	"path"
+
+	"github.com/ubuntu/display-snap/config"
 )
 
 const defaultimg = "nopreview.svg"
@@ -19,9 +21,9 @@ func (f VirtImages) Open(name string) (http.File, error) {
 	var err error
 	for _, p := range []string{
 		name,
-		path.Join(Datadir, name),
-		path.Join(Rootdir, name),
-		path.Join(Rootdir, "www", defaultimg),
+		path.Join(config.Datadir, name),
+		path.Join(config.Rootdir, name),
+		path.Join(config.Rootdir, "www", defaultimg),
 	} {
 		if file, err = os.Open(p); err == nil {
 			return file, nil

@@ -3,13 +3,11 @@ package pilot
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
-	"path"
-	"path/filepath"
-
 	"log"
-
+	"path"
 	"time"
+
+	"github.com/ubuntu/display-snap/config"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -113,7 +111,8 @@ func loadDefinition() error {
 	var data []byte
 	var err error
 	var selectedFile string
-	for _, selectedFile := range []string{path.Join(datadir, demoFilename), path.Join(rootdir, demoFilename)} {
+	for _, selectedFile := range []string{path.Join(config.Datadir, demoFilename),
+		path.Join(config.Rootdir, demoFilename)} {
 		data, err = ioutil.ReadFile(selectedFile)
 		if err != nil {
 			continue
@@ -144,25 +143,4 @@ func loadDefinition() error {
 	}
 
 	return nil
-}
-
-// FIXME: check how to share main Rootdir and Datadir
-var (
-	rootdir string
-	datadir string
-)
-
-func init() {
-	// Set main set of directories
-	var err error
-	rootdir = os.Getenv("SNAP")
-	if rootdir == "" {
-		if rootdir, err = filepath.Abs("."); err != nil {
-			log.Fatal(err)
-		}
-	}
-	datadir = os.Getenv("SNAP_DATA")
-	if datadir == "" {
-		datadir = rootdir
-	}
 }
