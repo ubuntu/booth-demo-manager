@@ -1,4 +1,4 @@
-package pilot
+package main
 
 import (
 	"fmt"
@@ -19,11 +19,10 @@ func (f VirtImages) Open(name string) (http.File, error) {
 	var err error
 	for _, p := range []string{
 		name,
-		path.Join(datadir, name),
-		path.Join(rootdir, name),
-		path.Join(rootdir, "www", defaultimg),
+		path.Join(Datadir, name),
+		path.Join(Rootdir, name),
+		path.Join(Rootdir, "www", defaultimg),
 	} {
-		fmt.Println(p)
 		if file, err = os.Open(p); err == nil {
 			return file, nil
 		}
