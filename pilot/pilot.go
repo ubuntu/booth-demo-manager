@@ -20,21 +20,9 @@ type CurrentDemoMsg struct {
 }
 
 var (
-	allDemos       map[string]*Demo
-	current        CurrentDemo
+	allDemos map[string]*Demo
+	current  *CurrentDemo
 )
-
-// Demo represent one demo element which can be a slide deck or multiple items
-type Demo struct {
-	Description string
-	Image       string
-	Time        int
-	URL         string `yaml:"url"`
-	Slides      []struct {
-		Image string
-		URLS  string `yaml:"urls"`
-	}
-}
 
 const (
 	demoFilename = "demos.def"
@@ -105,6 +93,10 @@ func Start(changeCurrent <-chan CurrentDemoMsg) (<-chan CurrentDemoMsg, <-chan m
 	}()
 
 	return currentCh, allDemosCh, nil
+}
+
+func sendNewCurrentURL(ch chan<- CurrentDemoMsg, c *CurrentDemo) {
+	ch <- CurrentDemoMsg{ID: c.id, URL: c.url, Index: c.slideIndex}
 }
 
 func loadDefinition() error {
