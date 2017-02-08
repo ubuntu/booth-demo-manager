@@ -2,8 +2,10 @@ package messages
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"golang.org/x/net/websocket"
 )
@@ -37,7 +39,15 @@ func NewClient(conn *websocket.Conn, server *Server) (*Client, error) {
 
 // Send a message to this client
 func (c *Client) Send(msg *Action) {
-	c.send <- msg
+	select {
+	case c.send <- msg:
+	// If we couldn't send the message in a second, consider the client died
+	case <-time.After(time.Second):
+		err := fmt.Errorf("client disconnected abruptely")
+		c.server.err <- err
+		c.Quit()
+	}
+
 }
 
 // Quit close down client connection
