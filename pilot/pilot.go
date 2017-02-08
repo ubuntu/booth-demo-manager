@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"path"
-	"time"
 
 	"github.com/ubuntu/display-snap/config"
 
@@ -29,7 +28,7 @@ const (
 	defaultTime  = 30
 )
 
-// Start the pilot element handling timers and such. Return a channel of current demo ID
+// Start all demos. Return a channel of current demo ID
 // and all demos
 // TODO: starts and close it properly once we can shutdown webserver
 func Start(changeCurrent <-chan CurrentDemoMsg) (<-chan CurrentDemoMsg, <-chan map[string]*Demo, error) {
@@ -44,9 +43,6 @@ func Start(changeCurrent <-chan CurrentDemoMsg) (<-chan CurrentDemoMsg, <-chan m
 		// sending first all Demos list
 		allDemosCh <- allDemos
 
-		var ticker *time.Ticker
-		quitTicker := make(chan bool)
-		defer close(quitTicker)
 		for {
 			select {
 			case elem := <-changeCurrent:
@@ -55,38 +51,13 @@ func Start(changeCurrent <-chan CurrentDemoMsg) (<-chan CurrentDemoMsg, <-chan m
 					log.Printf("%s not in currently available demos", elem.ID)
 					continue
 				}
-				if ticker != nil {
-					quitTicker <- true
+				// We avoid a potential race, waiting for the older current object to be deselected before selecting the new one
+				// Especially important when the same one is selected again
+				if current != nil {
+					current.Release()
+					<-current.deselected
 				}
-
-				url := d.URL
-				// Handling demo with multiple URLs
-				if len(d.Slides) > 0 {
-					/*
-						// select url to show
-						url := d.URLS[0]
-						for _, u := range d.URLS[0] {
-							if u == elem.URL {
-								// Found!
-							}
-						}
-
-						ticker = time.NewTicker(time.Second * time.Duration(d.Time))
-						go func() {
-							for {
-								select {
-								case <-ticker.C:
-								case <-quitTicker:
-									ticker.Stop()
-									ticker = nil
-									return
-								}
-							}
-						}()*/
-				}
-				current = CurrentDemoMsg{ID: elem.ID, URL: url, Index: 0}
-
-				currentCh <- current
+				current = d.Select(elem.ID, elem.Index, currentCh)
 			}
 		}
 
