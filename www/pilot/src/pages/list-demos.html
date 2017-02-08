@@ -79,6 +79,8 @@
           'command': 'changeCurrent',
           'content': {
             'ID': e.model.get('item.id'),
+            // In case of sliding deck, trigger auto mode from the list page
+            'Index': -1,
           },
         });
       },
