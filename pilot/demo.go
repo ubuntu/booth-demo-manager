@@ -27,9 +27,9 @@ type CurrentDemo struct {
 
 // Select set demo as current demo. Starts timer if slides demo and not already the case and set
 // index as current one. It will spawn a goroutine to send some change current after timer.
-func (d *Demo) Select(id string, slideIndex int, currentChan chan<- CurrentDemoMsg) *CurrentDemo {
+func (d Demo) Select(id string, slideIndex int, currentChan chan<- CurrentDemoMsg) *CurrentDemo {
 	if !d.IsSlideDemo() {
-		c := &CurrentDemo{d, id, d.URL, slideIndex, nil, nil, make(chan bool)}
+		c := &CurrentDemo{&d, id, d.URL, slideIndex, nil, nil, make(chan bool)}
 		sendNewCurrentURL(currentChan, c)
 		return c
 	}
@@ -37,7 +37,7 @@ func (d *Demo) Select(id string, slideIndex int, currentChan chan<- CurrentDemoM
 	// non auto rolling demo: only select one slide
 	if slideIndex > -1 && slideIndex < len(d.Slides) {
 		url := d.Slides[slideIndex].URL
-		c := &CurrentDemo{d, id, url, slideIndex, nil, nil, make(chan bool)}
+		c := &CurrentDemo{&d, id, url, slideIndex, nil, nil, make(chan bool)}
 		sendNewCurrentURL(currentChan, c)
 		return c
 	}
@@ -46,7 +46,7 @@ func (d *Demo) Select(id string, slideIndex int, currentChan chan<- CurrentDemoM
 	ticker := time.NewTicker(time.Second * time.Duration(d.Time))
 	stop := make(chan struct{})
 	// First immediately first elem
-	c := &CurrentDemo{d, id, d.Slides[0].URL, 0, ticker, stop, make(chan bool)}
+	c := &CurrentDemo{&d, id, d.Slides[0].URL, 0, ticker, stop, make(chan bool)}
 	sendNewCurrentURL(currentChan, c)
 	go func() {
 		defer func() { current.deselected <- true }()
@@ -79,6 +79,6 @@ func (c *CurrentDemo) Release() {
 }
 
 // IsSlideDemo returns the nature of the demo (slide with auto-advance or fixed demo)
-func (d *Demo) IsSlideDemo() bool {
+func (d Demo) IsSlideDemo() bool {
 	return len(d.Slides) != 0
 }
