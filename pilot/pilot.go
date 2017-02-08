@@ -12,8 +12,8 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// CurrentDemo element with ID, its current URL and optional index
-type CurrentDemo struct {
+// CurrentDemoMsg element with ID, its current URL and optional index
+type CurrentDemoMsg struct {
 	ID    string
 	Index int
 	URL   string
@@ -44,8 +44,8 @@ const (
 // Start the pilot element handling timers and such. Return a channel of current demo ID
 // and all demos
 // TODO: starts and close it properly once we can shutdown webserver
-func Start(changeCurrent <-chan CurrentDemo) (<-chan CurrentDemo, <-chan map[string]*Demo, error) {
-	currentCh := make(chan CurrentDemo)
+func Start(changeCurrent <-chan CurrentDemoMsg) (<-chan CurrentDemoMsg, <-chan map[string]*Demo, error) {
+	currentCh := make(chan CurrentDemoMsg)
 	allDemosCh := make(chan map[string]*Demo)
 
 	if err := loadDefinition(); err != nil {
@@ -96,7 +96,7 @@ func Start(changeCurrent <-chan CurrentDemo) (<-chan CurrentDemo, <-chan map[str
 							}
 						}()*/
 				}
-				current = CurrentDemo{ID: elem.ID, URL: url, Index: 0}
+				current = CurrentDemoMsg{ID: elem.ID, URL: url, Index: 0}
 
 				currentCh <- current
 			}

@@ -9,7 +9,7 @@ import (
 
 var (
 	allDemos               map[string]pilot.Demo
-	current                pilot.CurrentDemo
+	current                pilot.CurrentDemoMsg
 	displayComm, pilotComm *messages.Server
 )
 
@@ -23,7 +23,7 @@ func initWS() {
 	go pilotComm.Listen()
 }
 
-func buildCurrentDemoMessage(currDemo pilot.CurrentDemo) *messages.Action {
+func buildCurrentDemoMessage(currDemo pilot.CurrentDemoMsg) *messages.Action {
 	return &messages.Action{
 		Command: "current",
 		Content: currDemo,
@@ -56,7 +56,7 @@ func newPilotClient(c *messages.Client) {
 }
 
 func startPilot() error {
-	changeCurrentDemo := make(chan pilot.CurrentDemo)
+	changeCurrentDemo := make(chan pilot.CurrentDemoMsg)
 	currDemoChanged, allDemosChanged, err := pilot.Start(changeCurrentDemo)
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func startPilot() error {
 					id, _ := orig["ID"].(string)
 					index, _ := orig["Index"].(float64)
 					url, _ := orig["URL"].(string)
-					newCurr := pilot.CurrentDemo{
+					newCurr := pilot.CurrentDemoMsg{
 						ID:    id,
 						Index: int(index),
 						URL:   url,
