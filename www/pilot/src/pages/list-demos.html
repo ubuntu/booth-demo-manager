@@ -22,7 +22,7 @@
           color: var(--canonical-aubergine);
           background: rgba(255,255,255, .5);
           border-top-right-radius: 0.4em;
-          font-size: 0.6em;
+          font-size: 0.9em;
         };
       }
       paper-button.nav {
@@ -47,7 +47,7 @@
           <div>[[item.value.Description]]</div>
           <p class="nav-info">Navigate to <a href=[[_translateURL(item.value.URL)]]>[[_translateURL(item.value.URL)]]</a></p>
         </div>
-        <div class$="card-actions [[_selected(current, item.id)]]">
+        <div class$="card-actions [[_selected(current, item.id)]] layout horizontal justified">
           <paper-button class="nav" on-tap="_navigateTo">Go</paper-button>
           <template is="dom-if" if="[[item.value.Slides]]">
             <a href="/pilot/demos/[[item.id]]" tabindex="-1">
@@ -100,7 +100,7 @@
             return Object.keys(obj).map(function(key) {
                 return {
                     id: key,
-                    value: obj[key]
+                    value: obj[key],
                 };
             });
       },

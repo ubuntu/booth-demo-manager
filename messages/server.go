@@ -103,6 +103,7 @@ func (s *Server) Listen() {
 
 		// server shutdown
 		case <-s.quit:
+			log.Printf("Quit server")
 			for c := range s.clients {
 				c.Quit()
 			}
