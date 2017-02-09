@@ -114,7 +114,7 @@ func loadDefinition() error {
 			allDemos[id] = d
 		}
 		if d.URL != "" && len(d.Slides) > 0 {
-			fmt.Printf("%s has both url nor slides attributes. Will only use slides\n", id)
+			fmt.Printf("%s has both url and slides attributes. Will only use slides\n", id)
 		}
 	}
 

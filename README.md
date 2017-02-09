@@ -1,7 +1,10 @@
 # Booth Demo manager
 This application enables managing multiple websites by piloting a webpage.
 
-It can either switch from demo to demo, or have complex demo with multiple
+Serve a piloted webpage (default port being 8001) and a pilot interface
+to control it.
+
+You  can either switch from demo to demo, or have complex demo with multiple
 pages, cycling after a defined time between them.
 
 If you want to point out a particular page or slide of one demo, you can as
