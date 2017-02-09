@@ -8,8 +8,8 @@ If you want to point out a particular page or slide of one demo, you can as
 well easily stop the timer by clicking on a particular element.
 
 ## Usage
-Just start `boot-demo-manager`, it will serve 2 web pages:
-* One at http://localhost:8001/display (the frontend user to display), which
+Just start `boot-demo-manager`, it will serve 2 web interfaces:
+* One at http://localhost:8001/ (the frontend user to display), which
 is the piloted page.
 * One at http://localhost:8001/pilot, which shows all available demos and
 pages for complex demos, and enables switching display frontend between them.

@@ -32,6 +32,9 @@ func main() {
 		log.Fatalf("Couldn't load demo settings: %v", err)
 	}
 
+	// Generated links: will serve IP to connect to
+	http.HandleFunc("/start", startPageHandler)
+
 	// Website real assets
 	wwwPath := path.Join(config.Rootdir, "www")
 	wwwHandler := http.FileServer(http.Dir(path.Join(config.Rootdir, "www")))
@@ -43,19 +46,22 @@ func main() {
 		if !dir.IsDir() {
 			continue
 		}
+		// display is /
+		if dir.Name() == "display" {
+			http.Handle("/", http.FileServer(http.Dir(path.Join(config.Rootdir, "www", "display"))))
+			continue
+		}
 		http.Handle("/"+dir.Name()+"/", wwwHandler)
 	}
 	// Virtual image directory
 	http.Handle("/pilot/generatedimg/", http.StripPrefix("/pilot/generatedimg/", http.FileServer(VirtImages{})))
-	// Generated links: will serve IP to connect to
-	http.HandleFunc("/", startPageHandler)
 
 	// Print ips
 	ips, err := getLocalIPs()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Serving display on http://localhost:%s/display", *port)
+	log.Printf("Serving display on http://localhost:%s", *port)
 	for _, ip := range ips {
 		addr := fmt.Sprintf("http://%s:%s/pilot", ip, *port)
 		log.Printf("You access pilot interface via %s\n", addr)
