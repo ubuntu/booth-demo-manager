@@ -1,3 +1,9 @@
 booth-demo-manager
 
 bower_components/
+__pycache__/
+
+parts/
+stage/
+prime/
+*.snap
