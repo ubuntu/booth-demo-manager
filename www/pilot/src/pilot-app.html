@@ -20,7 +20,7 @@
       <list-demos name="" demos=[[allDemos]] current=[[current.ID]]
                           on-navigate="_sendNav"></list-demos>
       <demo-details name="demos" id=[[_idfor(subroute.path)]] demo=[[_demofor(subroute.path,allDemos)]]
-                    auto=[[current.Auto]] slideindex=[[current.Index]]
+                    auto=[[current.Auto]] slideindex=[[current.Index]] current=[[current.ID]]
                     on-navigate="_sendNav"></demo-details>
     </iron-pages>
     <app-location route="{{route}}"></app-location>

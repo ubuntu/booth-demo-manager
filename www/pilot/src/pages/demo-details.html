@@ -32,7 +32,7 @@
     <h1>Details for [[id]]</h1>
     <template is="dom-if" if="[[demo]]">
       <div>[[demo.Description]]</div>
-      <paper-listbox selected="[[_selectedAutoOrSlide(auto,slideindex)]]">
+      <paper-listbox selected="[[_selectedAutoOrSlide(id,auto,slideindex,current)]]">
         <paper-item on-tap="_slideSelected">
           <img src="/pilot/img/play.svg" />
           <paper-item-body two-line>
@@ -73,14 +73,20 @@
         },
         slideindex: Number,
         auto: Boolean,
+        current: String,
         _host: {
           type: String,
           value: window.location.hostname,
         },
       },
 
-      // elem 0 is "All (auto), otherwise return the selected Index offsetted
-      _selectedAutoOrSlide: function(auto, slideindex) {
+      // elem 0 is "All (auto), otherwise return the selected Index offsetted if
+      // this is the selected demo.
+      _selectedAutoOrSlide: function(id, auto, slideindex, current) {
+        // not current demo
+        if (current !== id) {
+          return -1;
+        }
         if (auto) {
           return 0;
         }
