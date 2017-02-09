@@ -6,7 +6,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/ubuntu/display-snap/config"
+	"github.com/ubuntu/booth-demo-manager/config"
 )
 
 const defaultimg = "nopreview.svg"

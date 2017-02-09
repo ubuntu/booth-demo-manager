@@ -6,7 +6,7 @@ import (
 	"log"
 	"path"
 
-	"github.com/ubuntu/display-snap/config"
+	"github.com/ubuntu/booth-demo-manager/config"
 
 	yaml "gopkg.in/yaml.v2"
 )

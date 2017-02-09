@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/ubuntu/display-snap/config"
+	"github.com/ubuntu/booth-demo-manager/config"
 )
 
 type startPageData struct {

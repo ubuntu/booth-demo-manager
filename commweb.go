@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/ubuntu/display-snap/messages"
-	"github.com/ubuntu/display-snap/pilot"
+	"github.com/ubuntu/booth-demo-manager/messages"
+	"github.com/ubuntu/booth-demo-manager/pilot"
 )
 
 var (
