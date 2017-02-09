@@ -1,0 +1,39 @@
+name: booth-demo-manager
+version: '1.0'
+summary: Managing multiple websites by piloting a webpage
+description: |
+  Serve a piloted webpage (default port being 8001) and a pilot interface
+  to control it.
+  You  can either switch from demo to demo, or have complex demo with multiple
+  pages, cycling after a defined time between them.
+  If you want to point out a particular page or slide of one demo, you can as
+  well easily stop the timer by clicking on a particular element.
+grade: stable
+confinement: devmode
+
+apps:
+  booth-demo-manager:
+    command: booth-demo-manager
+
+parts:
+  software:
+    source: .
+    source-type: git
+    plugin: go
+    go-importpath: "github.com/ubuntu/booth-demo-manager"
+  static-www:
+    source: www/
+    plugin: dump
+    organize:
+      '*': www/
+    stage: [-www/display, -www/pilot]
+  display-www:
+    source: www/display
+    plugin: bower
+    organize:
+      '*': www/display/
+  pilot-www:
+    source: www/pilot
+    plugin: bower
+    organize:
+      '*': www/pilot/
