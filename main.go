@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/ubuntu/booth-demo-manager/config"
+	"github.com/ubuntu/booth-demo-manager/pilot"
 )
 
 var (
@@ -18,7 +19,8 @@ var (
 )
 
 func main() {
-	port = flag.String("p", "8100", "port to serve display interface")
+	port = flag.String("p", "8001", "port on which to serve web interfaces")
+	pilot.DemoFilePath = flag.String("c", pilot.DemoDefaultFilename, "config file path overriding default one")
 
 	flag.Parse()
 

@@ -22,11 +22,14 @@ type CurrentDemoMsg struct {
 var (
 	allDemos map[string]Demo
 	current  *CurrentDemo
+	// DemoFilePath that can be set by user at runtime
+	DemoFilePath *string
 )
 
 const (
-	demoFilename = "demos.def"
-	defaultTime  = 30
+	// DemoDefaultFilename is file name that we look for if any config path is set.
+	DemoDefaultFilename = "demos.def"
+	defaultTime         = 30
 )
 
 // Start all demos. Return a channel of current demo ID
@@ -75,15 +78,24 @@ func loadDefinition() error {
 	var data []byte
 	var err error
 	var selectedFile string
-	for _, selectedFile := range []string{path.Join(config.Datadir, demoFilename),
-		path.Join(config.Rootdir, demoFilename)} {
+
+	// Always look for relative path first.
+	potentialDemoFiles := []string{*DemoFilePath}
+	// If default name, look for more places.
+	if *DemoFilePath == DemoDefaultFilename {
+		potentialDemoFiles = append(potentialDemoFiles,
+			path.Join(config.Datadir, DemoDefaultFilename),
+			path.Join(config.Rootdir, DemoDefaultFilename))
+	}
+
+	for _, selectedFile := range potentialDemoFiles {
 		data, err = ioutil.ReadFile(selectedFile)
 		if err != nil {
 			continue
 		}
 	}
 	if data == nil {
-		return fmt.Errorf("Couldn't read any of %s: %v", demoFilename, err)
+		return fmt.Errorf("Couldn't read any of config file: %v", err)
 	}
 
 	allDemos = make(map[string]Demo)

@@ -45,9 +45,7 @@
 
       ready: function() {
         // connect websocket and different handlers
-        //var websocket = new ReconnectingWebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/api/pilot');
-        // TODO: local connection to not relaunch go webserver
-        var websocket = new ReconnectingWebSocket('ws://' + window.location.hostname + ':8100/api/pilot');
+        var websocket = new ReconnectingWebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/api/pilot');
         websocket.onopen = this._connected.bind(this);
         websocket.onclose = this._disconnected.bind(this);
         websocket.onerror = this._connectionerror.bind(this);
