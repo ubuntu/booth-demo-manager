@@ -32,6 +32,15 @@ class BowerPlugin(dump.DumpPlugin, nodejs.NodePlugin):
         super().__init__(name, options, project)
         options.node_packages += ["bower"]
 
+    def snap_fileset(self):
+        '''Remove bower and npm from final installation'''
+        super().snap_fileset()
+        # Note: as we can use organize: to reorganize the content and fileset
+        # is relative to destination prime directory, we need to use **/ regexp
+        # Consequence is that it can remove valid subdirectories and files though.
+        return ['-**/bin', '-**/etc', '-**/include', '-**/lib', '-**/share',
+                '-**/CHANGELOG.md', '-**/LICENSE', '-**/README.md']
+
     def build(self):
         ''''Setup build and install directory with source sets'''
         super().build()
