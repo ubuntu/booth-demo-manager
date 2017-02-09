@@ -37,3 +37,5 @@ parts:
     plugin: bower
     organize:
       '*': www/pilot/
+    # workaround for https://launchpad.net/bugs/1663247
+    after: [display-www]
