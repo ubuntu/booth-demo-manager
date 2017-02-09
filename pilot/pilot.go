@@ -16,6 +16,7 @@ type CurrentDemoMsg struct {
 	ID    string
 	Index int
 	URL   string
+	Auto  bool
 }
 
 var (
@@ -67,7 +68,7 @@ func Start(changeCurrent <-chan CurrentDemoMsg) (<-chan CurrentDemoMsg, <-chan m
 }
 
 func sendNewCurrentURL(ch chan<- CurrentDemoMsg, c *CurrentDemo) {
-	ch <- CurrentDemoMsg{ID: c.id, URL: c.url, Index: c.slideIndex}
+	ch <- CurrentDemoMsg{ID: c.id, URL: c.url, Index: c.slideIndex, Auto: c.auto}
 }
 
 func loadDefinition() error {
