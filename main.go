@@ -32,11 +32,16 @@ func main() {
 		log.Fatalf("Couldn't load demo settings: %v", err)
 	}
 
+	wwwPath := path.Join(config.Rootdir, "www")
+
 	// Generated links: will serve IP to connect to
 	http.HandleFunc("/start", startPageHandler)
+	http.HandleFunc("/pilot/demos/", func(w http.ResponseWriter, r *http.Request) {
+		// Serve Index pilot page for generated /demo/ links. The client-side router will handle it then.
+		http.ServeFile(w, r, path.Join(wwwPath, "pilot", "index.html"))
+	})
 
 	// Website real assets
-	wwwPath := path.Join(config.Rootdir, "www")
 	wwwHandler := http.FileServer(http.Dir(path.Join(config.Rootdir, "www")))
 	dirs, err := ioutil.ReadDir(wwwPath)
 	if err != nil {
