@@ -19,7 +19,9 @@
     <iron-pages selected="[[routeData.view]]" attr-for-selected="name">
       <list-demos name="" demos=[[allDemos]] current=[[current.ID]]
                           on-navigate="_sendNav"></list-demos>
-      <demo-details name="demos" id=[[_idfor(subroute.path)]] demo=[[_demofor(subroute.path,allDemos)]]></demo-details>
+      <demo-details name="demos" id=[[_idfor(subroute.path)]] demo=[[_demofor(subroute.path,allDemos)]]
+                    auto=[[current.Auto]] slideindex=[[current.Index]]
+                    on-navigate="_sendNav"></demo-details>
     </iron-pages>
     <app-location route="{{route}}"></app-location>
     <app-route

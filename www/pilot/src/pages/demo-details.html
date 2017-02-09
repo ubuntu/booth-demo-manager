@@ -1,17 +1,62 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
 
 <dom-module id="demo-details">
   <template>
     <style>
       :host {
         display: block;
+        margin: 0.5em;
+      }
+      h1 {
+        text-align: center;
+      }
+      paper-listbox {
+        --paper-listbox-background-color: transparent;
+      }
+      paper-item {
+        padding: 1em;
+      }
+      paper-item.iron-selected {
+        color: white;
+        background-color: var(--canonical-aubergine);
+      }
+      img {
+        height: 80px;
+        width: 90px;
+        margin-right: 1em;
       }
     </style>
     <h1>Details for [[id]]</h1>
+    <template is="dom-if" if="[[demo]]">
+      <div>[[demo.Description]]</div>
+      <paper-listbox selected="[[_selectedAutoOrSlide(auto,slideindex)]]">
+        <paper-item on-tap="_slideSelected">
+          <img src="/pilot/img/play.svg" />
+          <paper-item-body two-line>
+            <div>All</div>
+            <div secondary>Automated rollout, time between slides: [[demo.Time]]s</div>
+          </paper-item-body>
+        </paper-item>
+        <template is="dom-repeat" items="[[demo.Slides]]">
+          <paper-item on-tap="_slideSelected">
+            <img src="/pilot/generatedimg/[[item.Image]]" />
+            <paper-item-body two-line>
+                <div>Slide #[[index]]</div>
+                <div secondary>Navigate to <a href=[[_translateURL(item.URL)]]>[[_translateURL(item.URL)]]</a></div>
+            </paper-item-body>
+          </paper-item>
+        </template>
+      </paper-listbox>
+    </template>
     <template is="dom-if" if="[[!demo]]">
       <div>There is no registered demo matching [[id]]. Invalid URL?</div>
     </template>
-    <a href="/pilot/">Back to all demos</a>
+    <div>
+      <a href="/pilot/">&lt; Back to all demos</a>
+    </div>
   </template>
 
   <script>
@@ -26,6 +71,38 @@
           // default value for object so that if=[[!demo]] is evaluated
           value: {},
         },
+        slideindex: Number,
+        auto: Boolean,
+        _host: {
+          type: String,
+          value: window.location.hostname,
+        },
+      },
+
+      // elem 0 is "All (auto), otherwise return the selected Index offsetted
+      _selectedAutoOrSlide: function(auto, slideindex) {
+        if (auto) {
+          return 0;
+        }
+        return slideindex + 1;
+      },
+
+      _slideSelected: function (e) {
+        var index = e.model.get('index')
+        if (index == undefined) {
+          index = -1
+        }
+        this.fire('navigate', {
+          'command': 'changeCurrent',
+          'content': {
+            'ID': this.id,
+            'Index': index,
+          },
+        });
+      },
+
+      _translateURL: function(url) {
+        return url.replace("localhost", this._host);
       },
     })
   </script>
