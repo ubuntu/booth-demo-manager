@@ -18,6 +18,7 @@ along with booth-demo-manager.  If not, see <http://www.gnu.org/licenses/>.
 package pilot
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -37,17 +38,19 @@ type CurrentDemoMsg struct {
 }
 
 var (
-	allDemos map[string]Demo
-	current  *CurrentDemo
-	// DemoFilePath that can be set by user at runtime
-	DemoFilePath *string
+	allDemos     map[string]Demo
+	current      *CurrentDemo
+	demoFilePath *string
 )
 
 const (
-	// DemoDefaultFilename is file name that we look for if any config path is set.
-	DemoDefaultFilename = "demos.def"
+	demoDefaultFilename = "demos.def"
 	defaultTime         = 30
 )
+
+func init() {
+	demoFilePath = flag.String("c", demoDefaultFilename, "config file path overriding default one")
+}
 
 // Start all demos. Return a channel of current demo ID
 // and all demos
@@ -97,12 +100,12 @@ func loadDefinition() error {
 	var selectedFile string
 
 	// Always look for relative path first.
-	potentialDemoFiles := []string{*DemoFilePath}
+	potentialDemoFiles := []string{*demoFilePath}
 	// If default name, look for more places.
-	if *DemoFilePath == DemoDefaultFilename {
+	if *demoFilePath == demoDefaultFilename {
 		potentialDemoFiles = append(potentialDemoFiles,
-			path.Join(config.Datadir, DemoDefaultFilename),
-			path.Join(config.Rootdir, DemoDefaultFilename))
+			path.Join(config.Datadir, demoDefaultFilename),
+			path.Join(config.Rootdir, demoDefaultFilename))
 	}
 
 	for _, selectedFile := range potentialDemoFiles {
