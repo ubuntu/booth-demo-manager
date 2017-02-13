@@ -23,8 +23,8 @@ import "time"
 type Demo struct {
 	Description string
 	Image       string
-	Time        int
 	URL         string `yaml:"url"`
+	Time        int
 	Slides      []struct {
 		Image string
 		URL   string `yaml:"url"`
