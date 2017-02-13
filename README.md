@@ -26,5 +26,4 @@ The port can be changed via the *-p* option.
 Slides configuration is named `demos.def` in the current directory.
 The path to this file can be as well defined via the *-c* option.
 
-Have a look at some configuration example from [`demos.def.example`](./demos.def.example) in the
-current directory.
+Have a look at some configuration example in [`examples/demos.def`](./examples/demos.def).
