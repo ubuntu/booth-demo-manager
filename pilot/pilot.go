@@ -110,8 +110,8 @@ func loadDefinition() error {
 
 	for _, selectedFile := range potentialDemoFiles {
 		data, err = ioutil.ReadFile(selectedFile)
-		if err != nil {
-			continue
+		if err == nil {
+			break
 		}
 	}
 	if data == nil {
