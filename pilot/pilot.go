@@ -133,6 +133,11 @@ func loadDefinition() error {
 			d.Time = defaultTime
 			allDemos[id] = d
 		}
+		// Take first slide image if no Image is set.
+		if d.Image == "" && len(d.Slides) > 0 {
+			d.Image = d.Slides[0].Image
+			allDemos[id] = d
+		}
 		if d.URL != "" && len(d.Slides) > 0 {
 			fmt.Printf("%s has both url and slides attributes. Will only use slides\n", id)
 		}
