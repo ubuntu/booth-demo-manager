@@ -55,9 +55,6 @@ func buildAllDemosChangedMessage(allDemos map[string]pilot.Demo) *messages.Actio
 }
 
 func newDisplayClient(c *messages.Client) {
-	if current.ID == "" {
-		return
-	}
 	c.Send(buildCurrentDemoMessage(current))
 }
 
@@ -66,15 +63,12 @@ func newPilotClient(c *messages.Client) {
 		return
 	}
 	c.Send(buildAllDemosChangedMessage(allDemos))
-	if current.ID == "" {
-		return
-	}
 	c.Send(buildCurrentDemoMessage(current))
 }
 
-func startPilot() error {
+func startPilot(startPageURL string) error {
 	changeCurrentDemo := make(chan pilot.CurrentDemoMsg)
-	currDemoChanged, allDemosChanged, err := pilot.Start(changeCurrentDemo)
+	currDemoChanged, allDemosChanged, err := pilot.Start(changeCurrentDemo, startPageURL)
 	if err != nil {
 		return err
 	}

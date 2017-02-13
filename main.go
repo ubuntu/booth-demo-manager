@@ -43,14 +43,15 @@ func main() {
 	initWS()
 
 	// start pilot system
-	if err := startPilot(); err != nil {
+	startPageRelURL := "/start"
+	if err := startPilot(fmt.Sprintf("http://localhost:%s%s", *port, startPageRelURL)); err != nil {
 		log.Fatalf("Couldn't load demo settings: %v", err)
 	}
 
 	wwwPath := path.Join(config.Rootdir, "www")
 
 	// Generated links: will serve IP to connect to
-	http.HandleFunc("/start", startPageHandler)
+	http.HandleFunc(startPageRelURL, startPageHandler)
 	http.HandleFunc("/pilot/demos/", func(w http.ResponseWriter, r *http.Request) {
 		// Serve Index pilot page for generated /demo/ links. The client-side router will handle it then.
 		http.ServeFile(w, r, path.Join(wwwPath, "pilot", "index.html"))

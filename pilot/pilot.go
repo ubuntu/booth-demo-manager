@@ -55,17 +55,18 @@ func init() {
 // Start all demos. Return a channel of current demo ID
 // and all demos
 // TODO: starts and close it properly once we can shutdown webserver
-func Start(changeCurrent <-chan CurrentDemoMsg) (<-chan CurrentDemoMsg, <-chan map[string]Demo, error) {
+func Start(changeCurrent <-chan CurrentDemoMsg, startPageURL string) (<-chan CurrentDemoMsg, <-chan map[string]Demo, error) {
 	currentCh := make(chan CurrentDemoMsg)
 	allDemosCh := make(chan map[string]Demo)
 
-	if err := loadDefinition(); err != nil {
+	if err := loadDefinition(startPageURL); err != nil {
 		return nil, nil, err
 	}
 
 	go func() {
-		// sending first all Demos list
+		// sending first all Demos list and start page
 		allDemosCh <- allDemos
+		current = allDemos[""].Select("", -1, currentCh)
 
 		for {
 			select {
@@ -94,7 +95,7 @@ func sendNewCurrentURL(ch chan<- CurrentDemoMsg, c *CurrentDemo) {
 	ch <- CurrentDemoMsg{ID: c.id, URL: c.url, Index: c.slideIndex, Auto: c.auto}
 }
 
-func loadDefinition() error {
+func loadDefinition(startPageURL string) error {
 	var data []byte
 	var err error
 	var selectedFile string
@@ -121,6 +122,13 @@ func loadDefinition() error {
 	allDemos = make(map[string]Demo)
 	if err := yaml.Unmarshal(data, &allDemos); err != nil {
 		return fmt.Errorf("%s isn't a valid yaml file: %v", selectedFile, err)
+	}
+
+	// Add start page
+	allDemos[""] = Demo{
+		Description: "Start page",
+		Image:       "www/start.png",
+		URL:         startPageURL,
 	}
 
 	// remove invalid elements and set default timer
