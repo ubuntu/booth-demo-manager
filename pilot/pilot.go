@@ -115,7 +115,7 @@ func loadDefinition() error {
 		}
 	}
 	if data == nil {
-		return fmt.Errorf("Couldn't read any of config file: %v", err)
+		return fmt.Errorf("Couldn't read any of config file as: %v", potentialDemoFiles)
 	}
 
 	allDemos = make(map[string]Demo)
