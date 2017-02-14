@@ -22,7 +22,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/ubuntu/booth-demo-manager/config"
 
@@ -44,12 +47,13 @@ var (
 )
 
 const (
-	demoDefaultFilename = "demos.def"
+	demoDefaultFilename = "booth-demo-manager.def"
 	defaultTime         = 30
 )
 
 func init() {
-	demoFilePath = flag.String("c", demoDefaultFilename, "config file path overriding default one")
+	demoFilePath = flag.String("c", demoDefaultFilename, "config file path overriding default one and autodetection")
+	allDemos = make(map[string]Demo)
 }
 
 // Start all demos. Return a channel of current demo ID
@@ -59,7 +63,7 @@ func Start(changeCurrent <-chan CurrentDemoMsg, startPageURL string) (<-chan Cur
 	currentCh := make(chan CurrentDemoMsg)
 	allDemosCh := make(chan map[string]Demo)
 
-	if err := loadDefinition(startPageURL); err != nil {
+	if err := loadAllDemos(&allDemos, startPageURL); err != nil {
 		return nil, nil, err
 	}
 
@@ -95,61 +99,121 @@ func sendNewCurrentURL(ch chan<- CurrentDemoMsg, c *CurrentDemo) {
 	ch <- CurrentDemoMsg{ID: c.id, URL: c.url, Index: c.slideIndex, Auto: c.auto}
 }
 
-func loadDefinition(startPageURL string) error {
-	var data []byte
+func loadAllDemos(allDemos *map[string]Demo, startPageURL string) error {
 	var err error
-	var selectedFile string
 
 	// Always look for relative path first.
-	potentialDemoFiles := []string{*demoFilePath}
-	// If default name, look for more places.
-	if *demoFilePath == demoDefaultFilename {
-		potentialDemoFiles = append(potentialDemoFiles,
-			path.Join(config.Datadir, demoDefaultFilename),
-			path.Join(config.Rootdir, demoDefaultFilename))
-	}
+	var configFiles []string
 
-	for _, selectedFile := range potentialDemoFiles {
-		data, err = ioutil.ReadFile(selectedFile)
-		if err == nil {
-			break
+	// If specified on the command line, take only that file.
+	if *demoFilePath != demoDefaultFilename {
+		configFiles = append(configFiles, *demoFilePath)
+	} else {
+		// If default name, look for more places, including autodetection.
+		// Last one wins over others.
+		// Rootdir
+		// SnapDir
+		// Relative path
+		// Autodetect config
+		configFiles = append(configFiles,
+			path.Join(config.Rootdir, demoDefaultFilename),
+			path.Join(config.Datadir, demoDefaultFilename),
+			demoDefaultFilename)
+
+		// try to detect files for every installed demos
+		if detectedConfigs, err := getValidDemosConfig(config.DemoBaseDir); err != nil {
+			log.Printf("Auto demo config loading error: %v", err)
+		} else {
+			for _, c := range detectedConfigs {
+				configFiles = append(configFiles, c)
+			}
 		}
 	}
-	if data == nil {
-		return fmt.Errorf("Couldn't read any of config file as: %v", potentialDemoFiles)
-	}
 
-	allDemos = make(map[string]Demo)
-	if err := yaml.Unmarshal(data, &allDemos); err != nil {
-		return fmt.Errorf("%s isn't a valid yaml file: %v", selectedFile, err)
+	// load all demos from config
+	for _, configFile := range configFiles {
+		if err = loadDemoAndSanitize(allDemos, configFile); err != nil {
+			log.Println(err)
+		}
 	}
 
 	// Add start page
-	allDemos[""] = Demo{
+	(*allDemos)[""] = Demo{
 		Description: "Start page",
 		Image:       "www/start.png",
 		URL:         startPageURL,
 	}
 
-	// remove invalid elements and set default timer
-	for id, d := range allDemos {
+	return nil
+}
+
+func loadDemoAndSanitize(allDemos *map[string]Demo, configFile string) error {
+	newDemos := make(map[string]Demo)
+
+	data, err := ioutil.ReadFile(configFile)
+	if err != nil {
+		return fmt.Errorf("%s config doesn't exist: %v", configFile, err)
+	}
+
+	if err := yaml.Unmarshal(data, &newDemos); err != nil {
+		return fmt.Errorf("%s isn't a valid yaml file: %v", configFile, err)
+	}
+
+	baseDir := filepath.Dir(configFile)
+
+	// remove invalid elements, translate image paths relative to config file and set default timer
+	for id, d := range newDemos {
 		if d.URL == "" && len(d.Slides) == 0 {
 			fmt.Printf("Removing %s has no url nor slides attributes\n", id)
-			delete(allDemos, id)
+			delete(newDemos, id)
 		}
 		if len(d.Slides) > 0 && d.Time == 0 {
 			d.Time = defaultTime
-			allDemos[id] = d
 		}
+
+		// if relative image dir, prefix baseDir
+		if d.Image != "" && !strings.HasPrefix(d.Image, "/") {
+			d.Image = path.Join(baseDir, d.Image)
+		}
+		for i, s := range d.Slides {
+			if s.Image != "" && !strings.HasPrefix(s.Image, "/") {
+				s.Image = path.Join(baseDir, s.Image)
+				d.Slides[i] = s
+			}
+		}
+
 		// Take first slide image if no Image is set.
 		if d.Image == "" && len(d.Slides) > 0 {
 			d.Image = d.Slides[0].Image
-			allDemos[id] = d
 		}
 		if d.URL != "" && len(d.Slides) > 0 {
 			fmt.Printf("%s has both url and slides attributes. Will only use slides\n", id)
+			d.URL = ""
 		}
+
+		newDemos[id] = d
+	}
+
+	// copy from newDemos to allDemos. Override as later is always more specific
+	for k, v := range newDemos {
+		(*allDemos)[k] = v
 	}
 
 	return nil
+}
+
+func getValidDemosConfig(base string) ([]string, error) {
+	var demoConfigs []string
+	demoBaseDirs, err := ioutil.ReadDir(config.DemoBaseDir)
+	if err != nil {
+		return nil, fmt.Errorf("Can't read %s path", base)
+	}
+	for _, dir := range demoBaseDirs {
+		p := path.Join(base, dir.Name(), "current", demoDefaultFilename)
+		if _, err := os.Stat(p); err == nil {
+			demoConfigs = append(demoConfigs, p)
+		}
+	}
+
+	return demoConfigs, nil
 }

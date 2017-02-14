@@ -20,6 +20,7 @@ package config
 import (
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -28,6 +29,8 @@ var (
 	Rootdir string
 	// Datadir access to write storage path
 	Datadir string
+	// DemoBaseDir access to potential demo directory
+	DemoBaseDir string
 )
 
 func init() {
@@ -38,6 +41,8 @@ func init() {
 		if Rootdir, err = filepath.Abs("."); err != nil {
 			log.Fatal(err)
 		}
+	} else {
+		DemoBaseDir = path.Join(Rootdir, "..", "..")
 	}
 	Datadir = os.Getenv("SNAP_DATA")
 	if Datadir == "" {
