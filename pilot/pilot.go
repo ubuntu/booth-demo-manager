@@ -112,13 +112,14 @@ func loadAllDemos(allDemos *map[string]Demo, startPageURL string) error {
 		// If default name, look for more places, including autodetection.
 		// Last one wins over others.
 		// Rootdir
-		// SnapDir
-		// Relative path
 		// Autodetect config
-		configFiles = append(configFiles,
-			path.Join(config.Rootdir, demoDefaultFilename),
-			path.Join(config.Datadir, demoDefaultFilename),
-			demoDefaultFilename)
+		// Data snap Dir
+		// Relative local path
+		r := path.Join(config.Rootdir, demoDefaultFilename)
+		d := path.Join(config.Datadir, demoDefaultFilename)
+		l := demoDefaultFilename
+
+		configFiles = append(configFiles, r)
 
 		// try to detect files for every installed demos
 		if detectedConfigs, err := getValidDemosConfig(config.DemoBaseDir); err != nil {
@@ -126,6 +127,18 @@ func loadAllDemos(allDemos *map[string]Demo, startPageURL string) error {
 		} else {
 			for _, c := range detectedConfigs {
 				configFiles = append(configFiles, c)
+			}
+		}
+
+		if d != r {
+			configFiles = append(configFiles, d)
+		}
+
+		if lAbsPath, err := filepath.Abs(l); err != nil {
+			log.Printf("Could determin abspath for %s:%v", l, err)
+		} else {
+			if lAbsPath != d && lAbsPath != r {
+				configFiles = append(configFiles, lAbsPath)
 			}
 		}
 	}
