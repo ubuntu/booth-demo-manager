@@ -1,0 +1,19 @@
+ubuntu-core-slides:
+  description: "Ubuntu core slide deck presentation"
+  slides:
+    - image: "img/slide1_preview.png"
+      url: http://localhost:9001/slide1.svg
+    - image: "img/slide2_preview.png"
+      url: http://localhost:9001/slide2.svg
+    - image: "/snap/ubuntu-core-slides/current/www/slide3.svg"
+      url: http://localhost:9001/slide3.svg
+face-detection:
+  description: "Face detection demo"
+  image: "/snap/face-detection-demo/current/www/images/chrome-touch-icon-192x192.png"
+  url: "http://localhost:8080"
+developer.ubuntu.com-core:
+  description: Ubuntu Core Developer website
+  url: https://developer.ubuntu.com/core
+snapcraft.io:
+  description: Snapcraft website
+  url: https://snapcraft.io/
