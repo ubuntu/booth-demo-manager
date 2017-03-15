@@ -37,9 +37,9 @@ func startPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// get IPs to file up data
 	ips, err := getLocalIPs()
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Couldn't find any local IP on this device: %v", err), http.StatusInternalServerError)
-		return
+	if err == nil {
+		data.Addrs = append(data.Addrs, "We couldn't find any other network IP on this network configuration.")
+		ips = append(ips, "localhost")
 	}
 	for _, ip := range ips {
 		addr := fmt.Sprintf("http://%s:%s/pilot", ip, *port)
