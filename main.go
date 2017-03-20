@@ -79,7 +79,7 @@ func main() {
 
 	// Print ips
 	ips, err := getLocalIPs()
-	if err == nil {
+	if err != nil {
 		fmt.Printf("Couldn't detect IP from this device: %v. We can't display this IP and you have to fetch it manually.\n", err)
 	}
 	log.Printf("Serving display on http://localhost:%s", *port)

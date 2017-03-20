@@ -37,7 +37,7 @@ func startPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// get IPs to file up data
 	ips, err := getLocalIPs()
-	if err == nil {
+	if err != nil {
 		data.Addrs = append(data.Addrs, "We couldn't find any other network IP on this network configuration.")
 		ips = append(ips, "localhost")
 	}
