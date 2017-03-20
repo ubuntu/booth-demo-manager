@@ -44,7 +44,7 @@
           <paper-item on-tap="_slideSelected">
             <img src="/pilot/generatedimg/[[item.Image]]" />
             <paper-item-body two-line>
-                <div>Slide #[[index]]</div>
+                <div>Slide #[[_offsetI(index)]]</div>
                 <div secondary>Navigate to <a href=[[_translateURL(item.URL)]]>[[_translateURL(item.URL)]]</a></div>
             </paper-item-body>
           </paper-item>
@@ -91,6 +91,10 @@
           return 0;
         }
         return slideindex + 1;
+      },
+
+      _offsetI: function(index) {
+        return index + 1;
       },
 
       _slideSelected: function (e) {
